@@ -88,6 +88,7 @@ INSTALLED_APPS = [
 # Middleware is processed in order - top to bottom for request, bottom to top for response
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static file serving
     'corsheaders.middleware.CorsMiddleware',  # CORS middleware - must be before Django middleware
     'core.middleware.SecurityMiddleware',  # Custom security middleware
     'core.middleware.PerformanceMonitoringMiddleware',  # Performance monitoring
@@ -189,6 +190,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# WhiteNoise configuration for efficient static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ============================================
 # MEDIA FILES (User uploads - products, profile pictures)
@@ -293,9 +297,13 @@ CORS_ALLOW_CREDENTIALS = True
 # ============================================
 # STATIC CONFIGURATION
 # ============================================
-SECURE_SSL_REDIRECT = False  # Set to True in production with HTTPS
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+# In production (not DEBUG), enable HTTPS/SSL and secure cookies
+SECURE_SSL_REDIRECT = not DEBUG  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = not DEBUG  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = not DEBUG  # Set to True in production with HTTPS
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 # ============================================
 # DRF SPECTACULAR (API DOCUMENTATION)
@@ -378,12 +386,11 @@ def custom_500_handler(request):
 # ============================================
 # PERFORMANCE OPTIMIZATIONS
 # ============================================
-# Database connection pooling and optimization
+# Database connection pooling and optimization for PostgreSQL
 if not DEBUG:
     DATABASES['default']['CONN_MAX_AGE'] = 60  # Connection pooling
-    DATABASES['default']['OPTIONS'] = {
-        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-    }
+    # PostgreSQL doesn't use init_command like MySQL
+    # Connection optimization is handled via dj_database_url
 
 # Cache settings (Redis recommended for production)
 CACHES = {
