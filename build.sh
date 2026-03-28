@@ -1,9 +1,7 @@
 #!/bin/bash
 set -o errexit
 
-cd backend/
+pip install -r backend/requirements.txt
 
-pip install -r requirements.txt
-
-python manage.py collectstatic --noinput
-python manage.py migrate --noinput
+python backend/manage.py collectstatic --noinput
+python backend/manage.py migrate --noinput

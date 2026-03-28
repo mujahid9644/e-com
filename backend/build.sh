@@ -1,8 +1,6 @@
 #!/bin/bash
 set -o errexit
 
-cd backend/ || exit 1
-
 pip install -r requirements.txt
 
 python manage.py collectstatic --noinput
