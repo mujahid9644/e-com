@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o errexit
 
-cd backend/ || exit 1
+cd backend/
 
 pip install -r requirements.txt
 
