@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "jsx": "preserve",
+    "jsxImportSource": "react"
+  },
+  "include": ["next.config.js", "pages/**/*.{js,jsx}", "components/**/*.{js,jsx}", "store/**/*.{js,jsx}", "utils/**/*.{js,jsx}"]
+}
